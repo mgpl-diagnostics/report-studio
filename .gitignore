@@ -1,0 +1,8 @@
+node_modules
+.next
+next-env.d.ts
+*.tsbuildinfo
+.env*.local
+# copied from @mgpl-diagnostics/report-kit on install
+public/report-assets
+public/report-fonts
