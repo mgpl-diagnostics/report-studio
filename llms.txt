@@ -1,0 +1,25 @@
+# MGPL Report Studio
+
+> Next.js 16 app (App Router) that previews MGPL Diagnostics lab reports, the letterhead and patient invoices, and serves A4 PDFs rendered in Node.js by @mgpl-diagnostics/report-kit and @mgpl-diagnostics/invoice-kit. It is the reference integration for using the kits in other Next.js apps.
+
+Key facts for agents:
+- No rendering logic here; change the kits instead.
+- PDF routes: `/api/report-pdf`, `/api/letterhead-pdf`, `/api/invoice-pdf` (GET samples, POST arbitrary JSON); `runtime = "nodejs"`.
+- Required config: `serverExternalPackages: ["@react-pdf/renderer", "@resvg/resvg-js"]`; `postinstall: mgpl-report-assets public`.
+
+## Docs
+
+- [README](README.md): routes, running, integrating the kits
+- [AGENTS.md](AGENTS.md): file map and rules
+
+## Source
+
+- [src/app/page.tsx](src/app/page.tsx): report preview page
+- [src/app/invoice/page.tsx](src/app/invoice/page.tsx): invoice preview page
+- [src/app/api/report-pdf/route.ts](src/app/api/report-pdf/route.ts): report PDF API
+- [src/app/api/invoice-pdf/route.ts](src/app/api/invoice-pdf/route.ts): invoice PDF API
+
+## Optional
+
+- [report-kit](https://github.com/mgpl-diagnostics/report-kit)
+- [invoice-kit](https://github.com/mgpl-diagnostics/invoice-kit)
