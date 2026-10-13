@@ -1,25 +1,26 @@
-# MGPL Report Studio
+# report-studio
 
-> Next.js 16 app (App Router) that previews MGPL Diagnostics lab reports, the letterhead and patient invoices, and serves A4 PDFs rendered in Node.js by @mgpl-diagnostics/report-kit and @mgpl-diagnostics/invoice-kit. It is the reference integration for using the kits in other Next.js apps.
+> Reference Next.js 16 app for MGPL Diagnostics. Its frontend pages use only @mgpl-diagnostics/client (custom UI, live previews, PDF download, a result-entry form generated from GET /templates). Its backend is one route, `src/app/api/mgpl/[...path]/route.ts`, mounting `createMgplApi()` from invoice-kit. `next build` renders every page static; only the API route is dynamic.
 
 Key facts for agents:
-- No rendering logic here; change the kits instead.
-- PDF routes: `/api/report-pdf`, `/api/letterhead-pdf`, `/api/invoice-pdf` (GET samples, POST arbitrary JSON); `runtime = "nodejs"`.
-- Required config: `serverExternalPackages: ["@react-pdf/renderer", "@resvg/resvg-js"]`; `postinstall: mgpl-report-assets public`.
+- Never import a kit in pages; use `src/lib/mgpl.ts` (the client). Rendering changes belong in the kits.
+- Real signatures: MGPL_SIGNATURE_HEADER_FILE / MGPL_SIGNATURE_NONHEADER_FILE in .env.local (git-ignored).
+- `src/contract-check.ts` fails typecheck if client and kit types drift.
 
 ## Docs
 
-- [README](README.md): routes, running, integrating the kits
+- [README](README.md): pages, running, environment, patterns to copy
 - [AGENTS.md](AGENTS.md): file map and rules
+- [llms-full.txt](llms-full.txt): docs plus the key source files
 
 ## Source
 
-- [src/app/page.tsx](src/app/page.tsx): report preview page
-- [src/app/invoice/page.tsx](src/app/invoice/page.tsx): invoice preview page
-- [src/app/api/report-pdf/route.ts](src/app/api/report-pdf/route.ts): report PDF API
-- [src/app/api/invoice-pdf/route.ts](src/app/api/invoice-pdf/route.ts): invoice PDF API
+- [src/app/api/mgpl/[...path]/route.ts](src/app/api/mgpl/%5B...path%5D/route.ts): backend
+- [src/lib/mgpl.ts](src/lib/mgpl.ts): client
+- [src/app/new/page.tsx](src/app/new/page.tsx): form → preview → PDF example
 
 ## Optional
 
 - [report-kit](https://github.com/mgpl-diagnostics/report-kit)
 - [invoice-kit](https://github.com/mgpl-diagnostics/invoice-kit)
+- [client](https://github.com/mgpl-diagnostics/client)
