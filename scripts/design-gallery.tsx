@@ -22,7 +22,7 @@ const meta = {
 const report = buildReport(patient, [{ template: "cbc", results: TEMPLATES.cbc.sample }]);
 const rows: Row[] = report.sections[0].rows;
 const lab = MGPL_LAB;
-const A = "../report-assets"; // relative to public/designs/
+const A = "/api/mgpl/assets/report-assets"; // served by the backend route
 
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
@@ -94,7 +94,7 @@ async function page(n: number, opts: { sidebar?: boolean; cards?: boolean }) {
   <footer>
     <div class="signs">
       <div class="qc"><img src="${A}/qc-stamp.svg" alt="QC approved"></div>
-      <div class="sign"><img src="${A}/signature-scan.jpg" alt="Signature"><b>${esc(lab.signatory.name)}</b><span>${esc(lab.signatory.designation)}</span></div>
+      <div class="sign"><img src="${A}/signature-placeholder.svg" alt="Signature"><b>${esc(lab.signatory.name)}</b><span>${esc(lab.signatory.designation)}</span></div>
     </div>
     <div class="legal"><span>This is an electronically verified report. Scan the QR code to confirm authenticity.</span><span>Page 1 of 1</span></div>
   </footer>

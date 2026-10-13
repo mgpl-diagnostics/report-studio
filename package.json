@@ -5,20 +5,21 @@
   "type": "module",
   "description": "MGPL Diagnostics preview app: reports, letterhead and invoices with A4 PDF download (Next.js).",
   "scripts": {
-    "postinstall": "mgpl-report-assets public",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "designs": "tsx scripts/design-gallery.tsx"
+    "designs": "tsx scripts/design-gallery.tsx",
+    "llms": "node scripts/llms-full.mjs \"report-studio\" README.md AGENTS.md \"src/app/api/mgpl/[...path]/route.ts\" src/lib/mgpl.ts src/contract-check.ts src/app/new/page.tsx"
   },
   "dependencies": {
-    "@mgpl-diagnostics/report-kit": "^1.0.0",
-    "@mgpl-diagnostics/invoice-kit": "^1.0.0",
+    "@mgpl-diagnostics/report-kit": "^2.0.0",
+    "@mgpl-diagnostics/invoice-kit": "^2.0.0",
     "next": "^16.4.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
-    "qrcode": "^1.5.4"
+    "qrcode": "^1.5.4",
+    "@mgpl-diagnostics/client": "^1.0.0"
   },
   "devDependencies": {
     "@types/node": "^22.20.5",
@@ -27,5 +28,6 @@
     "@types/react-dom": "^19.3.0",
     "tsx": "^4.23.15",
     "typescript": "^5.9.3"
-  }
+  },
+  "license": "SEE LICENSE IN LICENSE"
 }

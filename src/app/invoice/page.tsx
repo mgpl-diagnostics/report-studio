@@ -1,59 +1,56 @@
-import Link from "next/link";
-import { INVOICE_SAMPLES, InvoiceDocument } from "@mgpl-diagnostics/invoice-kit";
-import type { ReportVariant } from "@mgpl-diagnostics/report-kit";
-import { PrintButton } from "../PrintButton";
+"use client";
+// FRONTEND page: invoices rendered by the backend, shown with the studio's own UI.
+import { useRef, useState } from "react";
+import type { ReportVariant } from "@mgpl-diagnostics/client";
+import { HtmlFrame, useAsync, useInvoiceHtml, type HtmlFrameHandle } from "@mgpl-diagnostics/client/react";
+import { Nav } from "@/components/Nav";
+import { openPdf, savePdf } from "@/components/pdf-actions";
+import { Segmented } from "@/components/Segmented";
+import { mgpl } from "@/lib/mgpl";
 
-export const metadata = { title: "Invoices — MGPL Report Studio" };
-type Search = Promise<{ sample?: string; variant?: string }>;
-
-export default async function InvoicePage({ searchParams }: { searchParams: Search }) {
-  const q = await searchParams;
-  const sample = INVOICE_SAMPLES.find((s) => s.id === q.sample) ?? INVOICE_SAMPLES[0];
-  const variant: ReportVariant = q.variant === "non-header" ? "non-header" : "header";
-  const href = (id: string, v: ReportVariant) => `/invoice?sample=${id}&variant=${v}`;
-  const pdf = `/api/invoice-pdf?sample=${sample.id}&variant=${variant}`;
+export default function InvoicePage() {
+  const samples = useAsync(() => mgpl.invoices.samples(), "invoice-samples");
+  const [sample, setSample] = useState("paid");
+  const [variant, setVariant] = useState<ReportVariant>("header");
+  const request = { sample, variant };
+  const preview = useInvoiceHtml(mgpl, request);
+  const frame = useRef<HtmlFrameHandle>(null);
+  const current = samples.data?.find((s) => s.id === sample);
   return (
-    <div className="app">
-      <aside className="sidebar">
-        <h1>MGPL Report Studio</h1>
-        <p>
-          <Link href="/">← Reports</Link>
-        </p>
-        <nav aria-label="Invoices">
-          <h2>Invoices</h2>
-          {INVOICE_SAMPLES.map((s) => (
-            <Link key={s.id} href={href(s.id, variant)} aria-current={s.id === sample.id ? "page" : undefined}>
-              {s.label}
-            </Link>
-          ))}
-        </nav>
-      </aside>
-      <main className="main">
-        <div className="toolbar">
-          <div className="seg" role="group" aria-label="Variant">
-            <Link href={href(sample.id, "header")} aria-current={variant === "header"}>
-              Header
-            </Link>
-            <Link href={href(sample.id, "non-header")} aria-current={variant === "non-header"}>
-              Non-header
-            </Link>
+    <>
+      <Nav active="/invoice" />
+      <div className="app">
+        <aside className="sidebar">
+          <nav aria-label="Invoices">
+            <h2>Sample invoices</h2>
+            {samples.data?.map((s) => (
+              <button key={s.id} className="navitem" aria-current={s.id === sample ? "page" : undefined} onClick={() => setSample(s.id)}>
+                {s.label}
+              </button>
+            ))}
+          </nav>
+        </aside>
+        <main className="main">
+          <div className="toolbar">
+            <Segmented value={variant} onChange={setVariant} options={[["header", "Header"], ["non-header", "Non-header"]]} label="Variant" />
+            <span className="spacer" />
+            <button className="btn secondary" onClick={() => frame.current?.print()}>
+              Print
+            </button>
+            <button className="btn secondary" onClick={() => openPdf(() => mgpl.invoices.pdf(request))}>
+              Open PDF
+            </button>
+            <button className="btn" onClick={() => savePdf(() => mgpl.invoices.pdf(request), `${current?.invoiceNo ?? sample}.pdf`.replace(/\//g, "-"))}>
+              Download PDF
+            </button>
+            <div className="meta">
+              {current?.invoiceNo} {current && `· ${current.label}`} · sample prices{preview.loading && " · rendering…"}
+            </div>
           </div>
-          <span className="spacer" />
-          <PrintButton />
-          <a className="btn secondary" href={pdf} target="_blank" rel="noreferrer">
-            Open PDF
-          </a>
-          <a className="btn" href={`${pdf}&download=1`}>
-            Download PDF
-          </a>
-          <div className="meta">
-            {sample.invoice.invoiceNo} · {sample.label} · sample prices — edit the price list in invoice-kit
-          </div>
-        </div>
-        <div className="preview">
-          <InvoiceDocument invoice={sample.invoice} variant={variant} />
-        </div>
-      </main>
-    </div>
+          {preview.error && <p className="error">{preview.error.message}</p>}
+          <div className="preview">{preview.data && <HtmlFrame ref={frame} html={preview.data} title="Invoice preview" />}</div>
+        </main>
+      </div>
+    </>
   );
 }
