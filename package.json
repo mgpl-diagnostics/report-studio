@@ -10,7 +10,7 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "designs": "tsx scripts/design-gallery.tsx",
-    "llms": "node scripts/llms-full.mjs \"report-studio\" README.md AGENTS.md \"src/app/api/mgpl/[...path]/route.ts\" src/lib/mgpl.ts src/contract-check.ts src/app/new/page.tsx"
+    "llms": "node scripts/llms-full.mjs report-studio README.md AGENTS.md llms.txt package.json src scripts"
   },
   "dependencies": {
     "@mgpl-diagnostics/report-kit": "^2.0.0",
